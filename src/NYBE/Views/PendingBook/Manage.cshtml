@@ -1,0 +1,152 @@
+﻿@model NYBE.Models.AdminViewModels.ManageBooksViewModel
+@{
+    ViewData["Title"] = "Manage Books";
+}
+
+<script src="//code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" />
+
+<script>
+    var jquery = jQuery.noConflict();
+    jquery(document).ready(function () {
+        jquery('#all-books').DataTable();
+    });
+</script>
+@if (Model.pendingBooks.Any())
+{
+<script>
+    var jquery = jQuery.noConflict();
+    jquery(document).ready(function () {
+        jquery('#pending-books').DataTable();
+    });
+</script>
+}
+@if (Model.disabledBooks.Any())
+{
+    <script>
+    var jquery = jQuery.noConflict();
+    jquery(document).ready(function () {
+        jquery('#disabled-books').DataTable();
+    });
+    </script>
+}
+
+
+<h2 class="text-center">Manage Books</h2>
+<br />
+
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#pending">Pending Books</a></li>
+    <li><a data-toggle="tab" href="#all">All Books</a></li>
+    @if (Model.disabledBooks.Any())
+    {
+    <li><a data-toggle="tab" href="#disabled">Disabled Books</a></li>
+    }
+</ul>
+<div class="tab-content">
+    <br/>
+    <div id="pending" class="tab-pane fade in active">
+        @if (Model.pendingBooks.Any())
+        {
+            <div class="container">
+                <div class="table-responsive">
+                    <table id="pending-books" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>ISBN</th>
+                                <th>Edition</th>
+                                <th>Publisher</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (PendingBook book in Model.pendingBooks)
+                {
+                                <tr>
+                                    <td>@book.Title</td>
+                                    <td>@book.AuthorFName @book.AuthorLName</td> <!--Assume users only have one role-->
+                                    <td>@book.ISBN</td>
+                                    <td>@book.Edition</td>
+                                    <td>@book.Publisher</td>
+                                    <td>
+                                        <a asp-controller="PendingBook" asp-action="ViewBook" asp-route-id="@book.ID" class="btn btn-primary">View Book</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <h5 class="text-center">Currently no Pending Books!</h5>
+        }
+    </div>
+    <div id="all" class="tab-pane fade">
+        <div class="container">
+            <div class="table-responsive">
+                <table id="all-books" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>ISBN</th>
+                            <th>Edition</th>
+                            <th>Publisher</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Book book in Model.allBooks)
+                        {
+                            <tr>
+                                <td><a asp-controller="Book" asp-action="Index" asp-route-bookId="@book.ID">@book.Title</a></td>
+                                <td>@book.AuthorFName @book.AuthorLName</td> <!--Assume users only have one role-->
+                                <td>@book.ISBN</td>
+                                <td>@book.Edition</td>
+                                <td>@book.Publisher</td>
+                                <td><a asp-controller="PendingBook" asp-action="Disable" asp-route-id="@book.ID" class="btn btn-danger">Disable</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="disabled" class="tab-pane fade">
+        <div class="container">
+            <div class="table-responsive">
+                <table id="disabled-books" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>ISBN</th>
+                            <th>Edition</th>
+                            <th>Publisher</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Book book in Model.disabledBooks)
+                        {
+                            <tr>
+                                <td>@book.Title</td>
+                                <td>@book.AuthorFName @book.AuthorLName</td> <!--Assume users only have one role-->
+                                <td>@book.ISBN</td>
+                                <td>@book.Edition</td>
+                                <td>@book.Publisher</td>
+                                <td><a asp-controller="PendingBook" asp-action="Enable" asp-route-id="@book.ID" class="btn btn-success">Enable</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,111 @@
+﻿@model NYBE.Models.AdminViewModels.ManageUsersViewModel
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<script src="//code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" />
+
+<script>
+    var jquery = jQuery.noConflict();
+    jquery(document).ready(function () {
+        jquery('#all-users').DataTable();
+    });
+</script>
+@if (Model.disabledUsers.Any())
+{
+    <script>
+    var jquery = jQuery.noConflict();
+    jquery(document).ready(function () {
+        jquery('#disabled-users').DataTable();
+    });
+    </script>
+}
+
+
+<h2 class="text-center">Manage Users</h2>
+<br />
+
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#active">Active Users</a></li>
+    @if (Model.disabledUsers.Any())
+    {
+    <li><a data-toggle="tab" href="#inactive">Disabled Users</a></li>
+    }
+</ul>
+<div class="tab-content">
+    <br />
+    <div id="active" class="tab-pane fade in active">
+        <div class="container">
+            <div class="table-responsive">
+                <table id="all-users" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>School</th>
+                            <th>Rating</th>
+                            <th>View</th>
+                            <th>Edit</th>
+                            <th>Disable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int i = 0; }
+                        @foreach (ApplicationUser user in Model.users)
+                        {
+                        <tr>
+                            <td>@user.Email</td>
+                            <td>@Model.roles[i]</td> <!--Assume users only have one role-->
+                            <td>@user.FirstName</td>
+                            <td>@user.LastName</td>
+                            <td>@user.School.Name</td>
+                            <td>@user.Rating</td>
+                            <td><a class="btn btn-default" asp-controller="Profile" asp-route-UserId="@user.Id" name="UserId" id="UserId">View Profile</a></td>
+                            <td><a asp-controller="User" asp-action="EditUser" asp-route-id="@user.Id" class="btn btn-success">Edit</a></td>
+                            <td><a asp-controller="User" asp-action="DeleteUser" asp-route-id="@user.Id" class="btn btn-danger">Disable</a></td>
+                        </tr>
+                        i++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="inactive" class="tab-pane fade">
+        <div class="container">
+            <div class="table-responsive">
+                <table id="disabled-users" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>School</th>
+                            <th>Rating</th>
+                            <th>Activate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (ApplicationUser user in Model.disabledUsers)
+                        {
+                        <tr>
+                            <td>@user.Email</td>
+                            <td>@user.FirstName</td>
+                            <td>@user.LastName</td>
+                            <td>@user.School.Name</td>
+                            <td>@user.Rating</td>
+                            <td><a asp-controller="User" asp-action="ActivateUser" asp-route-id="@user.Id" class="btn btn-success">Activate</a></td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

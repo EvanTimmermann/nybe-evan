@@ -1,0 +1,175 @@
+﻿@inject SignInManager<ApplicationUser> SignInManager
+
+@{
+    List<Course> Courses = new List<Course> { };
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - NYBE</title>
+
+    <environment names="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+    <environment names="Staging,Production">
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+    @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
+
+    <!-- search bar -->
+    <link href="~/css/search.css" media="all" rel="stylesheet" type="text/css" />
+
+    <style>
+        .nounderline {
+            text-decoration: none !important;
+        }
+
+        body {
+            padding-top: 70px;
+        }
+
+        .navbar-brand {
+            padding: 0px 0px; /* firefox bug fix */
+            margin-top: 0px;
+        }
+
+        /* Get rid of link padding to make the above easier */
+        .navbar-nav > li > a {
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        /* EDIT these but should be the same depending on on what font you're using */
+        .navbar-brand, .navbar-nav > li > a {
+            height: 70px;
+            line-height: 70px;
+        }
+
+            .navbar-brand > img {
+                height: 100%;
+                padding: 15px; /* firefox bug fix */
+                width: auto;
+            }
+
+        .center {
+            position: center;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand nounderline">
+                    <img src="~/images/NYBE.svg" />
+                </a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-text navbar-left nounderline">
+                    <h4 style="color:#4b4b4b;">NYBE</h4>
+                </a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    @await Html.PartialAsync("_LoginPartial")
+                </ul>
+
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <div class="container text-center" id="searchContainer">
+                        <div class="input-group" id="adv-search" style="margin-top:17px;">
+                            <input class="form-control" id="generalSearch" type="text" form="searchForm" placeholder="Search Books" />
+                            <div class="input-group-btn">
+                                <div class="btn-group" role="group">
+                                    <div class="dropdown dropdown-lg">
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="glyphicon glyphicon-chevron-down"></span></button>
+                                        <div class="dropdown-menu dropdown-menu-right" role="menu">
+                                            <form asp-controller="Search" asp-action="Index" class="form-horizontal" role="form" id="searchForm">
+                                                <input name="generalSearch" id="generalSearchSubmit" hidden />
+                                                <div class="form-group">
+                                                    <input class="form-control" name="title" type="text" placeholder="Title" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <input class="form-control" name="author" type="text" placeholder="Author" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <input class="form-control" name="isbn" type="text" placeholder="ISBN" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="filter">Filter by School</label>
+                                                    <select class="form-control" name="schoolName" id="schoolSelectBox"></select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="filter">Filter by Course</label>
+                                                    <select class="form-control" name="courseName" id="courseSelectBox"></select>
+                                                </div>
+                                                <div>
+                                                    <button type="submit" class="btn btn-success" onclick="$('#generalSearchSubmit').val($('#generalSearch').val());" id="searchButton"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-success" onclick="$('#searchButton').click();"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*<form asp-controller="Search" asp-action="Index">
+                            <div class="navbar-form" role="search" style="text-align:center; padding-top:15px;">
+                                <div class="container" style="display:table-cell;">
+                                    <div class="input-group">
+                                        <input name="generalSearch" type="text" class="form-control" placeholder="Search Books">
+                                        <span class="input-group-btn">
+                                            <button type="submit" class="btn btn-success"><i class="glyphicon glyphicon-search"></i></button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>*@
+                }
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; 2017 - NYBE</p>
+        </footer>
+    </div>
+
+    <environment names="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery">
+        </script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
+        </script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,95 @@
+﻿
+@model NYBE.Models.SearchViewModels.BookSearchViewModel
+
+@{
+    ViewData["Title"] = "Find Books";
+}
+
+<script src="//code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" />
+
+<script>
+    var jquery = jQuery.noConflict();
+    jquery(document).ready(function () {
+        jquery('#book-table').DataTable();
+    });
+</script>
+
+<div class="text-center">
+    <h2>Find Books</h2>
+    <h5><a asp-controller="PendingBook" asp-action="Index">Request a book!</a></h5>
+</div>
+<hr />
+
+<div class="row">
+    <div class="col-sm-10 col-sm-offset-1">
+        @if (Model.bookList.Any())
+        {
+            <h3 class="text-center" style="color:forestgreen;"><i class="glyphicon glyphicon-info-sign"></i> We found @Model.bookList.Count matching book@(Model.bookList.Count == 1 ? "" : "s")!</h3>
+            <br />
+            <div class="table-responsive">
+                <table id="book-table" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.bookList[0].Title)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.bookList[0].AuthorLName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.bookList[0].AuthorFName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.bookList[0].Edition)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.bookList[0].ISBN)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.bookList[0].Publisher)
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var book in Model.bookList)
+                {
+                            <tr style="cursor:pointer" onclick="location.href = '@(Url.Action("Index", "Book", new { bookId = book.ID }))'">
+
+                                <th>
+                                    @Html.DisplayFor(modelItem => book.Title)
+                                </th>
+                                <th>
+                                    @Html.DisplayFor(modelItem => book.AuthorLName)
+                                </th>
+                                <th>
+                                    @Html.DisplayFor(modelItem => book.AuthorFName)
+                                </th>
+                                <th>
+                                    @Html.DisplayFor(modelItem => book.Edition)
+                                </th>
+                                <th>
+                                    @Html.DisplayFor(modelItem => book.ISBN)
+                                </th>
+                                <th>
+                                    @Html.DisplayFor(modmodelItemel => book.Publisher)
+                                </th>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center">
+                <h1 style="color:maroon;"><i class="glyphicon glyphicon-info-sign"></i> Whoops!</h1>
+                <h4>Looks like there were no books matching your criteria.</h4>
+                <h4>Try something else!</h4>
+            </div>
+            <br />
+        }
+    </div>
+</div>
